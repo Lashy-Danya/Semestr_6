@@ -9,7 +9,7 @@ size = int(input('Введите размер ряда: '))
 
 # mu – параметр, определяющий среднее значение
 # sigma – параметр, который определяет стандартное отклонение
-mu, sigma = 0, 0.1
+mu, sigma = 0, 0.3
 
 np.random.seed(0)
 # x = np.random.normal(mu, sigma, size=size)
