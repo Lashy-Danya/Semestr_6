@@ -1,0 +1,16 @@
+Again, opening existing files in 'w' mode is not a good idea, you'll lose the content of your file. – 
+Marius
+ Dec 16, 2014 at 3:08
+so, should be "a" mode ? – 
+liuzhidong
+ Dec 16, 2014 at 3:13
+1
+I'm not sure if that's what OP wants to do exactly (the question is not super clear), but 'a' mode is safer than 'w' because at least you won't lose the existing contents. – 
+Marius
+ Dec 16, 2014 at 3:15
+I tried this, but when I checked the pass.txt file it was still empty. – 
+Elle Nolan
+ Dec 16, 2014 at 3:18
+@Drew Nolan, be careful about the file name in the sample code, it should be changed accordingly.... to pass.txt – 
+liuzhidong
+ Dec 16, 2014 at 3:25

@@ -7,3 +7,4 @@
 ## Интересные ссылки
 
 - [Про Matplotlib](https://python-course.eu/numerical-programming/histograms-with-matplotlib.php)
+- [Про Statistical функции в SciPy](https://docs.scipy.org/doc/scipy/reference/stats.html)
