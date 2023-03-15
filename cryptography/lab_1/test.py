@@ -86,6 +86,10 @@ mas_blue = Counter(mas_blue)
 mas_green = Counter(mas_green)
 mas_red = Counter(mas_red)
 
+# print(mas_blue)
+# print(mas_green)
+# print(mas_red)
+
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 6))
 
 color_data_blue = [color for color, freq in mas_blue.most_common()]
