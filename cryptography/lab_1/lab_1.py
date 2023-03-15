@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import struct
 import math
+import matplotlib
+
+matplotlib.use('TkAgg')
+
 
 while 1:
     option = int(input('What do you want to process:\n1)Text(.txt)\n2)Image(.bmp)\n3)Exit\n'))
@@ -45,7 +49,7 @@ while 1:
         # bmp picture color format BGR
         file_name = input('Input text file name: ')
         print('\n')
-        bmp = open(file_name, 'rb')
+        bmp = open('file/' + file_name, 'rb')
         print('Type:', bmp.read(2).decode())
         print('Size: %s' % struct.unpack('I', bmp.read(4)))
         print('Reserved 1: %s' % struct.unpack('H', bmp.read(2)))
@@ -69,6 +73,7 @@ while 1:
         mas_green = []
         mas_red = []
         w = 0
+
         for pixel in data[0:]:
             if (color_tier == 0) & (int(pixel) == int(0)) & (w == int(wight[0])):
                 w = 0
@@ -83,6 +88,7 @@ while 1:
                 mas_red.append(pixel)
                 color_tier = 0
                 w = w + 1
+        
         print('COMPLETED READING IMAGE DATA')
         with open('temp_blue.csv', 'w') as csvfile:
             fieldnames = ['blue_color']
