@@ -29,8 +29,6 @@ for item in range(len(size_list)):
             if min_p <= list_np[el] < (min_p + p_list_copy[i + 1]):
                 n_list[i] += 1
 
-    print(n_list)
-
     m = (x_list * n_list).sum() / size_list[item]
 
     g = ((x_list * x_list * n_list).sum() / size_list[item]) - m**2
