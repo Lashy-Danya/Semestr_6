@@ -11,7 +11,7 @@ size = int(input('Введите размер ряда: '))
 
 x = np.random.uniform(size=size)
 
-plt.hist(x, facecolor="blue", edgecolor="black")
+plt.hist(x, facecolor="blue", bins=60, edgecolor="black")
 
 plt.title(f"Гистограмма частот для {size} элементов")
 plt.xlabel("Значения")

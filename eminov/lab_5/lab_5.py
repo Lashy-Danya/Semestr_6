@@ -81,10 +81,12 @@ class MainWindow(QMainWindow):
         size = int(self.input_size.text())
         a = int(self.input_a.text())
         mu = int(self.input_g.text())
-        new_array_np = np.zeros(size)
-        for i in range(size):
-            array_np = np.random.rand(12)
-            new_array_np[i] += array_np.sum() - 6
+        # new_array_np = np.zeros(size)
+        # for i in range(size):
+        #     array_np = np.random.rand(12)
+        #     new_array_np[i] += array_np.sum() - 6
+        new_array_np = np.random.rand(size, 12)
+        new_array_np = np.sum(new_array_np, axis=1) - 6
         new_array_np = new_array_np * mu + a
         # self.array_display.setPlainText(str(new_array_np))
 
