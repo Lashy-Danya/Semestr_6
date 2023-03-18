@@ -1,45 +1,44 @@
 import numpy as np
-from scipy.stats import chi2
+from scipy import stats
 
-def pearson_chi_square(data, alpha, k):
-    # Оценка параметра lambda показательного распределения
-    lambda_param = 1 / np.mean(data)
+# Генерируем случайную выборку из показательного распределения
+lambda_param = 2
+sample_size = 100
+sample = np.random.exponential(scale=1/lambda_param, size=sample_size)
 
-    # Определение границ интервалов
-    intervals = np.linspace(0, np.max(data), k + 1)
-    
-    # Вычисление наблюдаемых частот
-    observed_frequencies, _ = np.histogram(data, intervals)
+# Вычисляем среднее значение выборки
+sample_mean = np.mean(sample)
 
-    # Вычисление ожидаемых частот
-    n = len(data)
-    expected_frequencies = []
-    for i in range(k):
-        a = intervals[i]
-        b = intervals[i + 1]
-        expected_freq = n * (np.exp(-lambda_param * a) - np.exp(-lambda_param * b))
-        expected_frequencies.append(expected_freq)
+# Вычисляем параметр lambda показательного распределения
+lambda_estimate = 1 / sample_mean
+print(lambda_estimate)
 
-    # Вычисление статистики критерия Пирсона
-    chi_square_statistic = np.sum((observed_frequencies - expected_frequencies) ** 2 / expected_frequencies)
+# Определяем интервалы для категорий
+n_intervals = 5
+interval_size = np.max(sample) / n_intervals
+intervals = [i * interval_size for i in range(n_intervals + 1)]
+print(sample.min())
+print(intervals)
 
-    # Вычисление критического значения критерия Пирсона
-    df = k - 1
-    critical_value = chi2.ppf(1 - alpha, df)
+# Определяем ожидаемые значения для каждой категории
+n_expected = [sample_size * stats.expon.cdf(intervals[i + 1], scale=1/lambda_estimate) - 
+              sample_size * stats.expon.cdf(intervals[i], scale=1/lambda_estimate) for i in range(n_intervals)]
+print(n_expected)
 
-    # Сравнение статистики критерия Пирсона с критическим значением
-    if chi_square_statistic < critical_value:
-        return True
-    else:
-        return False
-    
-# data = np.random.exponential(scale=2, size=100)
-data = np.array([10.7834528, 93.61099552, 23.20354468, 11.44886688, 72.98541024, 123.4560133, 307.73221886, 70.77443892, 24.28046179, 59.30399486])
-# data = np.array([2, 3, 5, 6, 1, 7, 4, 8])
+# Определяем наблюдаемые значения для каждой категории
+n_observed, _ = np.histogram(sample, intervals)
+print(n_observed)
 
-# Генерация выборки из показательного распределения
-# data = np.random.exponential(1, 100)
+# Вычисляем статистику хи-квадрат
+chi2_stat = np.sum((n_observed - n_expected) ** 2 / n_expected)
 
-# Проверка выборки на соответствие показательному распределению
-result = pearson_chi_square(data, 0.05, 5)
-print(result)
+# Определяем количество степеней свободы и критическое значение хи-квадрат распределения
+df = n_intervals - 1
+alpha = 0.05
+chi2_crit = stats.chi2.ppf(q=1-alpha, df=df)
+
+# Сравниваем вычисленное значение хи-квадрат со значением критической области
+if chi2_stat < chi2_crit:
+    print("Нулевая гипотеза принимается (данные соответствуют показательному распределению)")
+else:
+    print("Нулевая гипотеза отвергается (данные не соответствуют показательному распределению)")
