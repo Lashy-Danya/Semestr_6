@@ -4,7 +4,9 @@ from scipy import stats
 # Генерируем случайную выборку из показательного распределения
 lambda_param = 2
 sample_size = 100
+# np.random.seed(123)
 sample = np.random.exponential(scale=1/lambda_param, size=sample_size)
+sample = np.random.normal(size=sample_size)
 
 # Вычисляем среднее значение выборки
 sample_mean = np.mean(sample)
@@ -18,6 +20,10 @@ n_intervals = 5
 interval_size = np.max(sample) / n_intervals
 intervals = [i * interval_size for i in range(n_intervals + 1)]
 print(sample.min())
+print(intervals)
+
+low, high = np.min(sample), np.max(sample)
+intervals = np.linspace(low, high, n_intervals+1)
 print(intervals)
 
 # Определяем ожидаемые значения для каждой категории
