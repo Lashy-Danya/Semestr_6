@@ -7,7 +7,6 @@ import scipy.stats as st
 matplotlib.use('TkAgg')
 
 conf_level = 0.05  # уровень доверия
-s = 2  # выборочное стандартное отклонение
 
 N = int(input('Введите размер ряда: '))
 
@@ -22,15 +21,17 @@ array_list = np.random.normal(mu, sigma, size=N)
 x_ = np.sum(array_list) / N
 
 # вычисляем выборочную дисперсию
-variance = sum((x - x_) ** 2 for x in array_list) / (N - 1)
+variance = sum([(x - x_) ** 2 for x in array_list]) / (N - 1)
+
+# s = np.std(array_list, ddof=1)
 
 # вычисляем выборочное стандартное отклонение
 s = np.sqrt(variance)
 
 # Вычисляем критическое значение распределения Стьюдента:
-# t = st.t.ppf((1 + conf_level) / 2, N - 1)
+t = st.t.ppf((1 + 0.95) / 2, N - 1)
 
-t = (x_ - 0.05) / (s / np.sqrt(N))
+# t = (x_ - 0.05) / (s / np.sqrt(N))
 
 number_one = round(x_ - t * (s / np.sqrt(N)), 6)
 number_two = round(x_ + t * (s / np.sqrt(N)), 6)
