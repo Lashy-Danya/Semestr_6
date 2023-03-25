@@ -4,7 +4,7 @@ from graphviz import Digraph
 # Целевое состояние игры
 goal_state = np.array([[1, 2, 3], [8, 0, 4], [7, 6, 5]])
 
-def get_successors(state):
+def find_moves(state):
     moves = []
     zero_pos = np.where(state == 0)
     zero_row, zero_col = zero_pos[0][0], zero_pos[1][0]
@@ -27,19 +27,25 @@ steps = 0
 def dfs(state, depth, visited, path, graph):
     global steps
     visited.append(str(state))
+
     if is_goal(state):
+        print(f'Steps: {steps}')
         return path
+    
     if depth == 0:
         return None
+    
     steps += 1
-    for successor in get_successors(state):
-        if str(successor) not in visited:
-            path.append(successor)
-            graph.edge(str(state), str(successor))
-            result = dfs(successor, depth-1, visited, path, graph)
+
+    for move in find_moves(state):
+        if str(move) not in visited:
+            path.append(move)
+            graph.edge(str(state), str(move))
+            result = dfs(move, depth-1, visited, path, graph)
             if result is not None:
                 return result
             path.pop()
+
     return None
 
 # функция для запуска алгоритма DFS с ограничением глубины
@@ -60,7 +66,6 @@ if __name__ == '__main__':
 
     if path is not None:
         # print(path, end='\n\n')
-        print(f'Steps: {steps}')
         graph.render('dfs')
         graph.view()
     else:
