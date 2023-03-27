@@ -11,10 +11,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIntValidator
 
 class Table(QTableWidget):
-    def __init__(self, row, column, size_row, size_height, max_height):
+    def __init__(self, row, column, size_row, size_height):
         super().__init__()
-
-        # self.setMaximumHeight(max_height)
 
         self.setRowCount(row)
         self.setColumnCount(column)
@@ -53,6 +51,13 @@ class Table(QTableWidget):
                     item.setTextAlignment(Qt.AlignmentFlag.AlignHCenter)
                     self.setItem(row_, col_, item)
 
+class InputHLayout(QHBoxLayout):
+    def __init__(self, label, input):
+        super().__init__()
+
+        self.addWidget(label)
+        self.addWidget(input)
+
 class MainWindow(QWidget):
 
     def __init__(self):
@@ -81,33 +86,26 @@ class MainWindow(QWidget):
 
         # Создание поля ввода размера массива
         size_label_tab1, self.size_input_tab1 = self.create_input('Введите размер массива:')
-        layout_tab1_size_input = QHBoxLayout()
-        layout_tab1_size_input.addWidget(size_label_tab1)
-        layout_tab1_size_input.addWidget(self.size_input_tab1)
+        layout_tab1_size_input = InputHLayout(size_label_tab1, self.size_input_tab1)
 
         # Создание поля ввода переменной A
         a_label_tab1, self.a_input_tab1 = self.create_input('Введите переменную A:')
-        layout_tab1_a_input = QHBoxLayout()
-        layout_tab1_a_input.addWidget(a_label_tab1)
-        layout_tab1_a_input.addWidget(self.a_input_tab1)
+        layout_tab1_a_input = InputHLayout(a_label_tab1, self.a_input_tab1)
+
 
         # Создание поля ввода переменной B
         b_label_tab1, self.b_input_tab1 = self.create_input('Введите переменную B:')
-        layout_tab1_b_input = QHBoxLayout()
-        layout_tab1_b_input.addWidget(b_label_tab1)
-        layout_tab1_b_input.addWidget(self.b_input_tab1)
+        layout_tab1_b_input = InputHLayout(b_label_tab1, self.b_input_tab1)
 
         # Создание поля ввода количества интервалов
         k_label_tab1, self.k_input_tab1 = self.create_input('Введите количество интервалов:')
-        layout_tab1_k_input = QHBoxLayout()
-        layout_tab1_k_input.addWidget(k_label_tab1)
-        layout_tab1_k_input.addWidget(self.k_input_tab1)
+        layout_tab1_k_input = InputHLayout(k_label_tab1, self.k_input_tab1)
 
         # Создание кнопки
         input_button_tab1 = QPushButton("Результат")
         input_button_tab1.clicked.connect(self.result_uniform)
 
-        self.array_table_tab1 = Table(6, 5, 130, 40, 200)
+        self.array_table_tab1 = Table(6, 5, 130, 40)
 
         # Создание полей для вывода расчетов
         self.mx_label_tab1 = self.create_output_label()
@@ -137,27 +135,21 @@ class MainWindow(QWidget):
 
         # Создание поля ввода размера массива
         size_label_tab2, self.size_input_tab2 = self.create_input('Введите размер массива:')
-        layout_tab2_size_input = QHBoxLayout()
-        layout_tab2_size_input.addWidget(size_label_tab2)
-        layout_tab2_size_input.addWidget(self.size_input_tab2)
+        layout_tab2_size_input = InputHLayout(size_label_tab2, self.size_input_tab2)
 
         # Создание поля ввода переменной Lamda
         lambda_label_tab2, self.lambda_input_tab2 = self.create_input('Введите переменную Lambda:')
-        layout_tab2_a_input = QHBoxLayout()
-        layout_tab2_a_input.addWidget(lambda_label_tab2)
-        layout_tab2_a_input.addWidget(self.lambda_input_tab2)
+        layout_tab2_lambda_input = InputHLayout(lambda_label_tab2, self.lambda_input_tab2)
 
         # Создание поля ввода количества интервалов
         k_label_tab2, self.k_input_tab2 = self.create_input('Введите количество интервалов:')
-        layout_tab2_k_input = QHBoxLayout()
-        layout_tab2_k_input.addWidget(k_label_tab2)
-        layout_tab2_k_input.addWidget(self.k_input_tab2)
+        layout_tab2_k_input = InputHLayout(k_label_tab2, self.k_input_tab2)
 
         # Создание кнопки
         input_button_tab2 = QPushButton("Результат")
         input_button_tab2.clicked.connect(self.result_exponential)
 
-        self.array_table_tab2 = Table(6, 5, 130, 40, 200)
+        self.array_table_tab2 = Table(6, 5, 130, 40)
 
         # Создание полей для вывода расчетов
         self.mx_label_tab2 = self.create_output_label()
@@ -170,7 +162,7 @@ class MainWindow(QWidget):
         tab2_layout = QVBoxLayout(tab2)
         tab2_layout.addWidget(title_tab2)
         tab2_layout.addLayout(layout_tab2_size_input)
-        tab2_layout.addLayout(layout_tab2_a_input)
+        tab2_layout.addLayout(layout_tab2_lambda_input)
         tab2_layout.addLayout(layout_tab2_k_input)
         tab2_layout.addWidget(input_button_tab2)
         tab2_layout.addWidget(self.array_table_tab2)
@@ -186,33 +178,25 @@ class MainWindow(QWidget):
 
         # Создание поля ввода размера массива
         size_label_tab3, self.size_input_tab3 = self.create_input('Введите размер массива:')
-        layout_tab3_size_input = QHBoxLayout()
-        layout_tab3_size_input.addWidget(size_label_tab3)
-        layout_tab3_size_input.addWidget(self.size_input_tab3)
+        layout_tab3_size_input = InputHLayout(size_label_tab3, self.size_input_tab3)
 
         # Создание поля ввода переменной A
         a_label_tab3, self.a_input_tab3 = self.create_input('Введите переменную A:')
-        layout_tab3_a_input = QHBoxLayout()
-        layout_tab3_a_input.addWidget(a_label_tab3)
-        layout_tab3_a_input.addWidget(self.a_input_tab3)
+        layout_tab3_a_input = InputHLayout(a_label_tab3, self.a_input_tab3)
 
         # Создание поля ввода переменной G
         g_label_tab3, self.g_input_tab3 = self.create_input('Введите переменную G:')
-        layout_tab3_g_input = QHBoxLayout()
-        layout_tab3_g_input.addWidget(g_label_tab3)
-        layout_tab3_g_input.addWidget(self.g_input_tab3)
+        layout_tab3_g_input = InputHLayout(g_label_tab3, self.g_input_tab3)
 
         # Создание поля ввода количества интервалов
         k_label_tab3, self.k_input_tab3 = self.create_input('Введите количество интервалов:')
-        layout_tab3_k_input = QHBoxLayout()
-        layout_tab3_k_input.addWidget(k_label_tab3)
-        layout_tab3_k_input.addWidget(self.k_input_tab3)
+        layout_tab3_k_input = InputHLayout(k_label_tab3, self.k_input_tab3)
 
         # Создание кнопки
         input_button_tab3 = QPushButton("Результат")
         input_button_tab3.clicked.connect(self.result_normal)
 
-        self.array_table_tab3 = Table(5, 6, 130, 40, 200)
+        self.array_table_tab3 = Table(6, 5, 130, 40)
 
         # Создание полей для вывода расчетов
         self.mx_label_tab3 = self.create_output_label()
@@ -348,7 +332,7 @@ class MainWindow(QWidget):
         df = k - 1 - 2
         crit = stats.chi2.ppf(1 - alpha, df)
 
-        self.stat_tab2.setText(f'Статистика критерия Пирсона: {str(np.around(stat, 8))}')
+        self.stat_tab2.setText(f'<p>Статистика критерия Пирсона: &#967;<sup>2</sup> {str(np.around(stat, 8))}</p>')
         self.crit_tab2.setText(f'Критическое значение Хи-квадрат: {str(np.around(crit, 8))}')
 
         # Сравнение Статистики Хи-квадрат с Критическим значением

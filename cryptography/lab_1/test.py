@@ -14,27 +14,27 @@ def remove_chars_from_text(text, chars):
     """
     return "".join([ch for ch in text if ch not in chars])
 
-# file_name = input('Введите название текстового файла: ')
-# with open('file/' + file_name, "r", encoding="ascii") as file:
-#     text = file.read().lower()
-# spec_chars = string.punctuation + '\n«»\t—…'
-# text = remove_chars_from_text(text, spec_chars)
-# symbols_frequencies = Counter(symbol for symbol in text if symbol in string.ascii_lowercase)
-# print(symbols_frequencies, end='\n')
+file_name = input('Введите название текстового файла: ')
+with open('file/' + file_name, "r", encoding="ascii") as file:
+    text = file.read().lower()
+spec_chars = string.punctuation + '\n«»\t—…'
+text = remove_chars_from_text(text, spec_chars)
+symbols_frequencies = Counter(symbol for symbol in text if symbol in string.ascii_lowercase)
+print(symbols_frequencies, end='\n')
 
-# # Расчет информационной меры файла
-# total_letters = sum(symbols_frequencies.values())
-# letter_prob = {letter: freq/total_letters for letter, freq in symbols_frequencies.items()}
-# print(letter_prob, end='\n')
-# entropy = -sum(p * log2(p) for p in letter_prob.values())
-# print(f'Entropy: {entropy}')
+# Расчет информационной меры файла
+total_letters = sum(symbols_frequencies.values())
+letter_prob = {letter: freq/total_letters for letter, freq in symbols_frequencies.items()}
+print(letter_prob, end='\n')
+entropy = -sum(p * log2(p) for p in letter_prob.values())
+print(f'Entropy: {entropy}')
 
-# sybol_data = [symbol for symbol, freq in symbols_frequencies.most_common()]
-# freqs = [freq for symbol, freq in symbols_frequencies.most_common()]
-# plt.bar(sybol_data, freqs)
-# plt.xlabel("Symbols")
-# plt.ylabel("Counter")
-# plt.show()
+sybol_data = [symbol for symbol, freq in symbols_frequencies.most_common()]
+freqs = [freq for symbol, freq in symbols_frequencies.most_common()]
+plt.bar(sybol_data, freqs)
+plt.xlabel("Symbols")
+plt.ylabel("Counter")
+plt.show()
 
 file_name = input('Введите название файла изображения: ')
 with open('file/' + file_name, "rb") as file:
