@@ -279,13 +279,13 @@ class MainWindow(QWidget):
         crit = stats.chi2.ppf(1 - alpha, df)
 
         self.stat_tab1.setText(f'<p>Статистика критерия Пирсона: &#967;<sup>2</sup> = {str(np.around(stat, 8))}</p>')
-        self.crit_tab1.setText(f'Критическое значение Хи-квадрат:  {str(np.around(crit, 8))}')
+        # self.crit_tab1.setText(f'Критическое значение Хи-квадрат:  {str(np.around(crit, 8))}')
 
         # Сравнение Статистики Хи-квадрат с Критическим значением
-        if stat < crit:
-            self.result_tab1.setText("Нулевая гипотеза принимается\n(данные соответствуют равномерному распределению)")
-        else:
-            self.result_tab1.setText("Нулевая гипотеза отвергается\n(данные не соответствуют нормальному распределению)")
+        # if stat < crit:
+        #     self.result_tab1.setText("Нулевая гипотеза принимается\n(данные соответствуют равномерному распределению)")
+        # else:
+        #     self.result_tab1.setText("Нулевая гипотеза отвергается\n(данные не соответствуют нормальному распределению)")
 
     def result_exponential(self):
         size = int(self.size_input_tab2.text())
@@ -332,14 +332,14 @@ class MainWindow(QWidget):
         df = k - 1 - 2
         crit = stats.chi2.ppf(1 - alpha, df)
 
-        self.stat_tab2.setText(f'<p>Статистика критерия Пирсона: &#967;<sup>2</sup> {str(np.around(stat, 8))}</p>')
-        self.crit_tab2.setText(f'Критическое значение Хи-квадрат: {str(np.around(crit, 8))}')
+        self.stat_tab2.setText(f'<p>Статистика критерия Пирсона: &#967;<sup>2</sup> = {str(np.around(stat, 8))}</p>')
+        # self.crit_tab2.setText(f'Критическое значение Хи-квадрат: {str(np.around(crit, 8))}')
 
         # Сравнение Статистики Хи-квадрат с Критическим значением
-        if stat < crit:
-            self.result_tab2.setText("Нулевая гипотеза принимается\n(данные соответствуют показательному распределению)")
-        else:
-            self.result_tab2.setText("Нулевая гипотеза отвергается\n(данные не соответствуют показательному распределению)")
+        # if stat < crit:
+        #     self.result_tab2.setText("Нулевая гипотеза принимается\n(данные соответствуют показательному распределению)")
+        # else:
+        #     self.result_tab2.setText("Нулевая гипотеза отвергается\n(данные не соответствуют показательному распределению)")
 
     def result_normal(self):
         size = int(self.size_input_tab3.text())
@@ -366,16 +366,33 @@ class MainWindow(QWidget):
 
         alpha = 0.05
 
-        # Вычисляем ожидаемые значения для каждого интервала
-        low, high = np.min(array_list), np.max(array_list)
-        intervals = np.linspace(low, high, k+1)
-        # вычисляем наблюдаемые частоты в каждой группе
-        observed, _ = np.histogram(array_list, bins=intervals)
-        # вычисляем ожидаемые частоты в каждой группе для равномерного распределения
-        expected = np.ones(k) * len(array_list) / k
+        # # Вычисляем ожидаемые значения для каждого интервала
+        # low, high = np.min(array_list), np.max(array_list)
+        # intervals = np.linspace(low, high, k+1)
+        # # вычисляем наблюдаемые частоты в каждой группе
+        # observed, _ = np.histogram(array_list, bins=intervals)
+        # # вычисляем ожидаемые частоты в каждой группе для равномерного распределения
+        # expected = np.ones(k) * len(array_list) / k
 
-        # Вычисляем статистику критерия Пирсона
-        stat = np.sum((observed - expected) ** 2 / expected)
+        # # Вычисляем статистику критерия Пирсона
+        # stat = np.sum((observed - expected) ** 2 / expected)
+
+        # Рассчитываем интервалы и количество наблюдений в каждом интервале
+        hist, intervals = np.histogram(array_list, k)
+
+        # Рассчитываем среднее значение и стандартное отклонение
+        mu = np.mean(array_list)
+        sigma = np.std(array_list)
+
+        # Рассчитываем ожидаемое количество наблюдений в каждом интервале
+        expected = np.zeros(k)
+        for i in range(k):
+            expected[i] = stats.norm.cdf(intervals[i + 1], mu, sigma) - stats.norm.cdf(intervals[i], mu, sigma)
+        expected *= array_list.size
+
+        stat = np.sum((hist - expected) ** 2 / expected)
+
+        self.stat_tab3.setText(f'<p>Статистика критерия Пирсона: &#967;<sup>2</sup> = {str(np.around(stat, 8))}</p>')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
