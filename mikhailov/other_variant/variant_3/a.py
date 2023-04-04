@@ -49,6 +49,7 @@ def find_moves(state, jug_1, jug_2):
     return moves
 
 def a_star_search(jug_1, jug_2, target):
+
     graph = Digraph()
     graph.node(str((0, 0)))
     steps = 0
@@ -64,6 +65,7 @@ def a_star_search(jug_1, jug_2, target):
         state = path[-1]
 
         if is_goal(state, target):
+            print(f"Требуется шагов: {steps}")
             print(path)
             return graph, steps
         steps += 1
@@ -89,10 +91,9 @@ if __name__ == '__main__':
     
     jug_1, jug_2, target = 5, 4, 3
 
-    graph, steps = a_star_search(jug_1, jug_2, target)
+    graph = a_star_search(jug_1, jug_2, target)
 
     if graph is not None:
-        print(f"Требуется шагов: {steps}")
         graph.render('a_tree')
         graph.view()
     else:

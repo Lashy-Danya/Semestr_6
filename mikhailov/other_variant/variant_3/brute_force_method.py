@@ -57,7 +57,8 @@ def bfs(jug_1, jug_2, target):
         state = queue.get()
 
         if is_goal(state, target):
-            return graph, steps
+            print(f"Требуется шагов: {steps}")
+            return graph
         steps += 1
 
         for move in find_moves(state, jug_1, jug_2):
@@ -71,12 +72,11 @@ def bfs(jug_1, jug_2, target):
 
 if __name__ == '__main__':
     
-    jug_1, jug_2, target = 5, 4, 3 
+    jug_1, jug_2, target = 5, 4, 3
 
-    graph, steps = bfs(jug_1, jug_2, target)
+    graph = bfs(jug_1, jug_2, target)
 
     if graph is not None:
-        print(f"Требуется шагов: {steps}")
         graph.render('bfs_tree')
         graph.view()
     else:
