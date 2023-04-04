@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # построение графа перебора
     graph = build_graph(start_state)
     if graph is not None:
-        graph.render('game_tree')
+        graph.render('brute_force')
         graph.view()
     else:
         print(f'Значение графа: {graph}')
