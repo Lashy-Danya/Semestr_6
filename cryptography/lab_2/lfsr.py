@@ -1,5 +1,5 @@
 class LFSR:
-    def __init__(self, seed, poly = 0b101001):
+    def __init__(self, seed, poly = 0b10100):
         self.state = seed
         self.poly = poly # порождающий полином: x^5 + x^3 + 1
 
@@ -14,22 +14,19 @@ class LFSR:
         return [self.rand() for _ in range(size)]
 
 if __name__ == '__main__':
+    from collections import Counter
 
-    lfsr = LFSR(0b10101)  # начальное значение регистра
-    text_lengths = [50, 100, 1000]
+    lfsr = LFSR(0b11011)  # начальное значение регистра
+    
+    arr = []
 
-    for length in text_lengths:
-        # генерация псевдослучайной последовательности битов
-        bits = lfsr.generate_sequence(length*5)
-        
-        # преобразование последовательности битов в текстовую строку
-        text = ""
-        for i in range(length):
-            char_code = 0
-            for j in range(5):
-                char_code += bits[i*5+j] * (2**(4-j))
-            char = chr(char_code + ord('а'))
-            text += char
-        
-        print(f"Тестирование на текстовой последовательности длиной {length} символов:")
-        print(text)
+    for i in range(1000):
+        rand_int = 0
+        for j in range(5):
+            rand_int |= lfsr.rand() << j
+        arr.append(rand_int)
+
+    # print(arr)
+
+    count_number = Counter(arr)
+    print(len(count_number))
