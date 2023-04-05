@@ -49,7 +49,7 @@ def dfs(state, jug_1, jug_2, target, depth, visited, path, graph):
     visited.append(str(state))
 
     if is_goal(state, target):
-        return path, steps
+        return path
     
     if depth == 0:
         return None
@@ -75,16 +75,19 @@ def run_dfs(state, jug_1, jug_2, target, depth):
     graph.node(str(state))
     path = dfs(state, jug_1, jug_2, target, depth, visited, path, graph)
 
-    return path, graph
+    if path is not None:
+        print(f"Требуется шагов: {steps}")
+        return graph
+    else:
+        return None
 
 if __name__ == '__main__':
     
     jug_1, jug_2, target = 5, 4, 3
 
-    path, graph = run_dfs((0, 0), jug_1, jug_2, target, 10)
+    graph = run_dfs((0, 0), jug_1, jug_2, target, 10)
 
     if graph is not None:
-        print(f"Требуется шагов: {steps}")
         graph.render('dfs_tree')
         graph.view()
     else:
