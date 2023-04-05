@@ -33,3 +33,5 @@ def lfsr(p, s, n):
 array = lfsr([1, 0, 1, 0, 0], [1, 0, 1, 0, 1, 0], 100)
 arr = array.astype(int)
 print(arr)
+
+# https://www.reddit.com/r/learnpython/comments/ljx100/how_to_make_my_code_for_lfsr_linearfeedback_shift/
