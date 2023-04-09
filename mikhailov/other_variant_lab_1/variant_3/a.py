@@ -67,7 +67,7 @@ def a_star_search(jug_1, jug_2, target):
         if is_goal(state, target):
             print(f"Требуется шагов: {steps}")
             print(path)
-            return graph, steps
+            return graph
         steps += 1
 
         visited.append(str((state)))

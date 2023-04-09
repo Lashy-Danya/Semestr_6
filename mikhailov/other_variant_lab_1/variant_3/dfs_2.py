@@ -11,16 +11,16 @@ def find_moves(state, jug_1, jug_2):
     
     state_jug_1, state_jug_2 = state
     # Если кувшины не пусты, их можно опустошить
-    if state_jug_1 > 0:
-        moves.append((0, state_jug_2))
     if state_jug_2 > 0:
         moves.append((state_jug_1, 0))
+    if state_jug_1 > 0:
+        moves.append((0, state_jug_2))
 
     # Если кувшины не полные, их можно наполнить
-    if state_jug_1 < jug_1:
-        moves.append((jug_1, state_jug_2))
     if state_jug_2 < jug_2:
         moves.append((state_jug_1, jug_2))
+    if state_jug_1 < jug_1:
+        moves.append((jug_1, state_jug_2))
 
     # if state_jug_1 > 0 and state_jug_2 < jug_2:
     #     amount_to_pour = min(state_jug_1, jug_2 - state_jug_2)
@@ -30,16 +30,16 @@ def find_moves(state, jug_1, jug_2):
     #     moves.append((state_jug_1 + amount_to_pour, state_jug_2 - amount_to_pour))
 
     # Из непустого кувшина можно перелить в неполный
-    if state_jug_1 != 0 and jug_2-state_jug_2 >= state_jug_1:
-        moves.append((0, state_jug_2+state_jug_1))
     if state_jug_2 != 0 and jug_1-state_jug_1 >= state_jug_2:
         moves.append((state_jug_1+state_jug_2, 0))
+    if state_jug_1 != 0 and jug_2-state_jug_2 >= state_jug_1:
+        moves.append((0, state_jug_2+state_jug_1))
 
     # Причем, если в неполном не хватит места,то оба кувшина останутся непустыми
-    if state_jug_2 != 0 and 0 < jug_1-state_jug_1 < state_jug_2:
-        moves.append((jug_1, state_jug_2 - (jug_1 - state_jug_1)))
     if state_jug_1 != 0 and 0 < jug_2-state_jug_2 < state_jug_1:
         moves.append((state_jug_1 - (jug_2 - state_jug_2), jug_2))
+    if state_jug_2 != 0 and 0 < jug_1-state_jug_1 < state_jug_2:
+        moves.append((jug_1, state_jug_2 - (jug_1 - state_jug_1)))
 
     return moves
 
