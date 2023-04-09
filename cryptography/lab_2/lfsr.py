@@ -16,7 +16,7 @@ class LFSR:
 if __name__ == '__main__':
     from collections import Counter
 
-    lfsr = LFSR(0b11011)  # начальное значение регистра
+    lfsr = LFSR(0b11011)
     
     arr = []
 
