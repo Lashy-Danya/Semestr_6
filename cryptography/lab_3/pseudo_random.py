@@ -5,9 +5,24 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 """
-Пунт 1.2.1
-Используя константу, равную номеру студента в списке
+Пунт 1.2.3
+псевдослучайную последовательность (ПСП), сгенерированную линейным рекуррентным генератором (LFSR)
 """
+
+class LFSR:
+    def __init__(self, seed, poly):
+        self.state = seed
+        self.poly = poly # порождающий полином: x^5 + x^3 + 1
+
+    def shift(self):
+        output = self.state & 1
+        self.state >>= 1
+        if output:
+            self.state ^= self.poly
+        return output
+    
+    def rand(self):
+        return sum(self.shift() << i for i in range(self.poly.bit_length()))
 
 cp866_chars = []
 for i in range(256):
@@ -17,15 +32,14 @@ for i in range(256):
     except UnicodeDecodeError:
         pass
 
-def remove_chars_from_text(text, chars):
-    return "".join([ch for ch in text if ch not in chars])
-
-def caesae_encode(text, key):
-    f = lambda arg: cp866_chars[(cp866_chars.index(arg)+key)%len(cp866_chars)]
+def encrypt_text(text, seed, poly):
+    lfsr = LFSR(seed, poly)
+    f = lambda arg: cp866_chars[(cp866_chars.index(arg)+lfsr.rand())%len(cp866_chars)]
     return ''.join(map(f, text))
 
-def caesae_decode(text, key):
-    f = lambda arg: cp866_chars[(cp866_chars.index(arg)-key)%len(cp866_chars)]
+def decrypt_text(text, seed, poly):
+    lfsr = LFSR(seed, poly)
+    f = lambda arg: cp866_chars[(cp866_chars.index(arg)-lfsr.rand())%len(cp866_chars)]
     return ''.join(map(f, text))
 
 if __name__ == '__main__':
@@ -43,13 +57,11 @@ if __name__ == '__main__':
 
         spec_chars = string.punctuation
 
-        # text = remove_chars_from_text(text.replace(" ", "").replace('\n', ''), spec_chars)
+        seed, poly = 0b11011000, 0b10111000
 
-        key = 1
-
-        result = caesae_encode(text, key)
+        result = encrypt_text(text, seed, poly)
         print(f'Result encode: {result}', end='\n\n')
-        print(f'Result decode: {caesae_decode(result, key)}')
+        print(f'Result decode: {decrypt_text(result, seed, poly)}')
 
         # Получаем частотный словарь символов
         freq_dict = Counter(result)

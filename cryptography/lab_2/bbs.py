@@ -1,17 +1,23 @@
+from math import gcd
+
 class BBS:
-    def __init__(self, seed, p=2147483647, q=2147483647):
+    def __init__(self, seed, p=499, q=547):
 
         if p % 4 != 3 or q % 4 != 3:
-            raise ValueError('p и q должны быть простыми числами')
+            raise ValueError('p и q должны быть сравнимыми с 3 по модулю 4')
 
         self.p = p
         self.q = q
-        self.n = p * q
+        self.m = p * q
         self.x = seed
+
+        if gcd(seed, self.m) != 1:
+            raise ValueError('seed и m должны быть взаимно простыми')
     
     def rand(self):
-        self.x = (self.x ** 2) % self.n
-        return self.x & 0xFFFF  # выбираем 16 младших битов
+        self.x = (self.x ** 2) % self.m
+        return self.x
+        # return self.x & 0xFFFF  # выбираем 16 младших битов
     
     def generate_sequence(self, size):
         return [self.rand() for _ in range(size)]
