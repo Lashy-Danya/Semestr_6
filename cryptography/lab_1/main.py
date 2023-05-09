@@ -1,6 +1,7 @@
 import os
 import string
 import math
+import codecs
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,6 +9,14 @@ from PIL import Image
 from collections import Counter
 
 matplotlib.use('TkAgg')
+
+cp866_chars = []
+for i in range(256):
+    try:
+        char = codecs.decode(bytes([i]), 'cp866')
+        cp866_chars.append(char)
+    except UnicodeDecodeError:
+        pass
 
 def entropy_txt(data):
     data = data.lower()
@@ -28,20 +37,22 @@ def frequency_analys_text(file_name):
     info_measure = entropy_txt(text)
     print(f'Информационная мера файла: {info_measure:.2f} бит')
 
-    symbols_ascii = string.printable + \
-        ''.join([chr(letter) for letter in range(ord('а'), ord('я')+1)]) + \
-        ''.join([chr(letter) for letter in range(ord('А'), ord('Я')+1)])
-
     # Удаляем пробелы и переходы на новую строку
     # text = text.replace('\n', '').replace(' ', '')
 
     # Получаем частотный словарь символов
-    freq_dict = Counter(text)
+    freq_dict_text = Counter(text)
 
-    plt.bar([i for i in symbols_ascii], [freq_dict.get(i, 0) for i in symbols_ascii])
-    plt.title('Гистограмма частоты символов ASCII')
-    plt.xlabel('ASCII символ')
-    plt.ylabel('Частота')
+    fig1, (ax, ax1) = plt.subplots(2, 1, figsize=(16, 6))
+
+    ax.bar([i for i in cp866_chars[:128]], [freq_dict_text.get(i, 0) for i in cp866_chars[:128]])
+    ax.set_title('Гистограмма начального текста')
+    ax.set_xlabel('Символы')
+    ax.set_ylabel('Частота')
+
+    ax1.bar([i for i in cp866_chars[128:]], [freq_dict_text.get(i, 0) for i in cp866_chars[128:]])
+    ax1.set_xlabel('Символы')
+    ax1.set_ylabel('Частота')
 
     plt.show()
 
