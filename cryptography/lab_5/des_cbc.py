@@ -30,7 +30,7 @@ if __name__ == '__main__':
         iv = 'тестив01'
 
         # Режим ECB
-        des = des.DES(key, 0)
+        des = des.DES(key, 1, iv)
         shifr = des.crypt(text, 0)
         deshifr = des.crypt(shifr, 1)
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         fig2, (ax2, ax3) = plt.subplots(2, 1, figsize=(16, 6))
 
         ax2.bar([i for i in cp866_chars[:128]], [freq_dict.get(i, 0) for i in cp866_chars[:128]])
-        ax2.set_title('Гистограмма зашифрованного текста используя режим ECB')
+        ax2.set_title('Гистограмма зашифрованного текста используя режим CBC')
         ax2.set_xlabel('Символы')
         ax2.set_ylabel('Частота')
 

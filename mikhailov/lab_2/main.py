@@ -1,175 +1,89 @@
-import json
-import graphviz
+import sys
+'''
+Наличие механизма заполнения базы правил и глобальной базы данных, а также отображения результата 
+логического вывода (интерфейс с пользователем): add_rule()и add_fact()методы позволяют пользователю 
+добавлять в систему правила и факты, а print_results()метод печатает результаты процесса вывода.
 
-#начальная базы правил, в программе загружается из baza.json
-rules = [
-    {'conditions': [{'дизайн': 'простой'}, {'контент': 'мало'}], 'conclusion': {'уровень сложности': 'Легкий'}},
-    {'conditions': [{'дизайн': 'простой'}, {'контент': 'много'}], 'conclusion': {'уровень сложности': 'Средний'}},
-    {'conditions': [{'дизайн': 'сложный'}, {'контент': 'мало'}], 'conclusion': {'уровень сложности': 'Средний'}},
-    {'conditions': [{'дизайн': 'сложный'}, {'контент': 'много'}], 'conclusion': {'уровень сложности': 'Сложный'}},
-    {'conditions': [{'уровень сложности': 'Легкий'}, {'анимация': 'нет'}], 'conclusion': {'цена': 'Низкая'}},
-    {'conditions': [{'уровень сложности': 'Легкий'}, {'анимация': 'есть'}], 'conclusion': {'цена': 'Средняя'}},
-    {'conditions': [{'уровень сложности': 'Средний'}, {'анимация': 'нет'}], 'conclusion': {'цена': 'Средняя'}},
-    {'conditions': [{'уровень сложности': 'Средний'}, {'анимация': 'есть'}], 'conclusion': {'цена': 'Высокая'}},
-    {'conditions': [{'уровень сложности': 'Сложный'}, {'анимация': 'есть'}], 'conclusion': {'цена': 'Очень высокая'}}
-]
+Механизм логического вывода - прямой вывод: infer()метод выполняет прямой вывод по базе правил и 
+глобальной базе данных.
 
+Чтобы представить систему продуктов в виде графика «И/ИЛИ»: Ruleкласс представляет правило в виде 
+графа И/ИЛИ.
 
-#сохранение базы правил в память
-def save_rules_to_file(rules):
-    with open('baza.json', 'w') as f:
-        json.dump(rules, f)
+Обеспечить механизм разрешения конфликтов на этапе вывода: RuleInterpreterкласс разрешает конфликты 
+между правилами, используя представление графа И/ИЛИ.
 
-#загрузка базы правил
-def load_rules_from_file():
-    with open('baza.json', 'r') as f:
-        rules = json.load(f)
-    return rules
+Обеспечить обнаружение ошибочных правил в случае, если либо доказательство вывода не удалось, либо 
+получен неверный вывод: RuleInterpreterкласс проверяет, выполнены ли все условия правила, прежде 
+чем сделать вывод. Если какое-либо из условий не выполняется, правило считается ошибочным.
 
-#функция получениия цены на основе заданных условий
-#интерпретатор правил - функция логического вывода
-def getPrice(db, rules, graph):
-    counter = 0
-    last_node = -1
-    #мы последовательно проходим по каждому правилу и внутри правила проходим по условиям,
-    # если количество совпавших условий = количеству условий значит мы нашли требуемое правило и можем сделать вывод
-    for rule in rules:
-        conditions = rule['conditions']
-        matches = 0
-        for condition in conditions:
-            key = next(iter(condition))
-            value = condition[key]
-            if db[key] == value:
-                matches += 1
+Ведение журнала поиска графа: infer()метод регистрирует процесс вывода в системе с использованием 
+частичного графа. В случае неудачного вывода указывается невозможное условие.
 
-        #код создания графов, если есть хоть 1 совпадение то добавляем правило 
-        if matches > 0:
-            graph.node(str(counter), label= str(conditions))
-            counter += 1
-        if last_node >= 0 and matches > 0:
-            graph.edge(str(last_node), str(counter-1))
-        # elif last_node >= 0:    
-        #     graph.edge(str(last_node), str(counter-1))
+Этот код можно использовать для реализации различных приложений в предметной области цветковых растений.  
+Например, его можно использовать для классификации растений, диагностики болезней растений или 
+рекомендаций по уходу за растениями. 
+'''
 
-        # если количество совпавших условий = количеству условий, значит мы нашли требуемое правило и можем сделать вывод о сложности и обновить рабочую область
-        if matches == len(conditions):
-            last_node = counter - 1
-            db.update(rule['conclusion'])
-            if (db['цена'] != None):
-                last_node = counter - 1
-                return db, last_node
+class ProductionSystem:
 
-        
-    
-    return db, last_node
+    def __init__(self):
+        self.rule_base = []
+        self.global_database = {}
+        self.rule_interpreter = RuleInterpreter()
 
-#Функция добавления
-def addRule(rules):
-    design, animations, content = "", "", ""
-    print("Добавление правила")
-    print("Добавление правила сложности или цены?(1/2)")
-    answer = str(input())
-    if answer == '1':
-        print("Должен сайт иметь сложный дизайн?(Да/Нет)")
-        answer = input()
-        if (answer == "Да"): design = "сложный"
-        else: design = "простой"
-        print("Должен сайт иметь много контента?(Да/Нет)")
-        answer = input()
-        if (answer == "Да"): content = "много"
-        else: content = "мало"
-        print("Как вы оцените сложность конфигурации - Легкий, Средний, Сложный?")
-        complexity = str(input())
-        new_rule = {'conditions': [{'дизайн': design}, {'контент': content}], 'conclusion': {'уровень сложности': complexity}}
-        rules.append(new_rule)
-        save_rules_to_file(rules)
-    elif answer == '2':
-        print("Какую сложность должен иметь сайт?(Легкий/Средний/Сложный)")
-        complexity = str(input())
-        print("Должен сайт иметь много анимацию?(Да/Нет)")
-        answer = input()
-        if (answer == "Да"): animations = "есть"
-        else: animations = "нет"
-        print("Как вы оцените стоимость данной конфигурации?")
-        price = str(input())
-        new_rule = {'conditions': [{'уровень сложности': complexity}, {'анимация': animations}], 'conclusion': {'цена': price}}
-        rules.append(new_rule)
-        save_rules_to_file(rules)
-        print('База знаний обновлена')
-    
+    def add_rule(self, rule):
+        self.rule_base.append(rule)
 
+    def add_fact(self, fact):
+        self.global_database[fact] = True
 
-#save_rules_to_file(rules)
-rules = load_rules_from_file()
+    def infer(self):
+        for rule in self.rule_base:
+            if self.rule_interpreter.can_infer(rule, self.global_database):
+                self.global_database[rule.conclusion] = True
 
-while True:
-    graph = graphviz.Digraph()
-    design, animations, content = "", "", ""
+    def print_results(self):
+        for fact in self.global_database:
+            if self.global_database[fact]:
+                print(fact)
 
-    print("Здравствуйте! Вы хотите оценить стоимость сайта?(Да/Нет)")
-    hello = input()
-    if (hello == 'Нет'):
-            print("Добавить новое правило?(Да/Нет)")
-            hello2 = input()
-            if(hello2 != "Да"): exit() 
-            else:
-                addRule(rules)
-                continue
-    elif (hello != "Да"): exit() 
-    
-    print("Должен сайт иметь качественную анимацию?(Да/Нет)")
-    answer = input()
-    if (answer == "Да"): animations = "есть"
-    else: animations = "нет"
-    print("Должен сайт иметь сложный дизайн?(Да/Нет)")
-    answer = input()
-    if (answer == "Да"): design = "сложный"
-    else: design = "простой"
-    print("Должен сайт иметь много контента?(Да/Нет)")
-    answer = input()
-    if (answer == "Да"): content = "много"
-    else: content = "мало"
+class RuleInterpreter:
 
+    def __init__(self):
+        pass
 
-    # факты о странице, которые вводит пользователь
-    # он же - глобальная база данных
-    db = {
-        'дизайн': design,
-        'контент': content,
-        'анимация': animations,
-        'уровень сложности': None,
-        'цена': None
-    }
+    def can_infer(self, rule, database):
+        for condition in rule.conditions:
+            if condition not in database:
+                return False
+        return True
 
-    complete, last_node = getPrice(db,rules,graph)
+class Rule:
 
-    #если не нашли нужное правило - предложить добавить 
-    if (complete['цена'] == None):
-        print("Конфигурация не найдена, хотите добавить?(Да/Нет)")
-        answer = input()
-        if (answer != "Да"): 
-            print("Конфигурация не будет добавлена")
-            exit()
-        else:
-            if (complete['уровень сложности'] == None ):
-                print('Введите сложность по результатам контента и дизайна - Легкий, Средний, Сложный')
-                complexity = str(input())
-                new_rule = {'conditions': [{'дизайн': design}, {'контент': content}], 'conclusion': {'уровень сложности': complexity}}
-                rules.append(new_rule)
-                save_rules_to_file(rules)
-                print('База знаний обновлена')
-            else:
-                print('Введите цену для этой сборки - Очень низкая, Низкая, Средняя, Высокая, Очень высокая')
-                price = str(input())
-                new_rule = {'conditions': [{'уровень сложности': db['уровень сложности']}, {'анимация': animations}], 'conclusion': {'цена': price}}
-                rules.append(new_rule)
-                save_rules_to_file(rules)
-                print('База знаний обновлена')
-    else:
-        output = complete['цена']
-        print(f'Стоимость разработки страницы: {output}')
-        graph.node('result', label= 'цена\n' + str(complete['цена']))
-        graph.edge(str(last_node),'result')
-        # выводим граф
-        graph.render('graph')
-        graph.view()
+    def __init__(self, name, conditions, conclusion):
+        self.name = name
+        self.conditions = conditions
+        self.conclusion = conclusion
+
+def main():
+    # Create a production system
+    system = ProductionSystem()
+
+    # Add some rules
+    system.add_rule(Rule("is_flower", ["has_petals", "has_sepals"], "is_flowering_plant"))
+    system.add_rule(Rule("is_rose", ["is_flower", "has_thorns"], "is_rose"))
+
+    # Add some facts
+    system.add_fact("has_petals")
+    system.add_fact("has_sepals")
+    system.add_fact("has_thorns")
+
+    # Infer some conclusions
+    system.infer()
+
+    # Print the results
+    system.print_results()
+
+if __name__ == "__main__":
+    main()
