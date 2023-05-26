@@ -1,4 +1,44 @@
-# Режимы шифрования/дешифрования
+import sys
+import codecs
+import math
+import matplotlib.pyplot as plt
+import string
+from collections import Counter
+from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLineEdit,
+                             QFileDialog, QLabel, QPushButton, QHBoxLayout,
+                             QComboBox, QMessageBox)
+
+# def entropy_txt(data):
+#     data = data.replace(" ", "").replace("\n", "")
+#     counter = Counter(data)
+#     probabilities = [count / len(data) for count in counter.values()]
+
+#     return -sum(prob * math.log2(prob) for prob in probabilities)
+
+def entropy_txt(data):
+    text = data
+    text = text.translate(str.maketrans('', '', string.punctuation + string.digits))
+    letter_counts = Counter(text)
+    total_letters = sum(letter_counts.values())
+    letter_frequencies = {}
+    for letter, count in letter_counts.items():
+        letter_frequencies[letter] = count / total_letters * 100
+    symbols = list(letter_frequencies.keys())
+    counts = list(letter_frequencies.values())
+    entropy = 0
+    for count in letter_counts.values():
+        p = count / total_letters
+        entropy -= p * math.log2(p)
+    return entropy
+
+cp866_chars = []
+for i in range(256):
+    try:
+        char = codecs.decode(bytes([i]), 'cp866')
+        cp866_chars.append(char)
+    except UnicodeDecodeError:
+        pass
+
 ECB = 0
 CBC = 1
 CFB = 2
@@ -341,46 +381,172 @@ class DES:
             result.append(self.__bitList_to_string(processed_block))
 
         return ''.join(result)
+
+def write_to_file(filename, data):
+    try:
+        with open(filename, "w") as file:
+            file.write(data)
+        print("Данные успешно записаны в файл:", filename)
+    except IOError:
+        print("Ошибка при записи данных в файл:", filename)
+
+class InputHLayout(QHBoxLayout):
+    def __init__(self, label, input):
+        super().__init__()
+
+        self.addWidget(label)
+        self.addWidget(input)
+
+class MyWindow(QWidget):
+    def __init__(self, title, width, height):
+        super().__init__()
+
+        self.setWindowTitle(title)
+        self.setFixedWidth(width)
+        self.setMinimumHeight(height)
+
+        title = QLabel("DES")
+
+        # Создание поля ввода seed
+        key_label, self.key_input = self.create_input('Ввод Key:')
+        layout_key_input = InputHLayout(key_label, self.key_input)
+
+        # Выбор режима шифрования или расшифрования
+        self.combo_box = QComboBox(self)
+        self.combo_box.addItem("ECB")
+        self.combo_box.addItem("CBC")
+        self.combo_box.addItem("CFB_WIKI")
+        self.combo_box.addItem("OFB_WIKI")
+        self.combo_box.addItem("CFB")
+        self.combo_box.addItem("OFB")
+
+        # Создание кнопки
+        input_button = QPushButton("Зашифровать текст")
+        input_button.clicked.connect(self.encode_des)
+
+        output_button = QPushButton("Расшифровать текст")
+        output_button.clicked.connect(self.decode_des)
+
+        layout = QVBoxLayout()
+        layout.addWidget(title)
+        layout.addLayout(layout_key_input)
+        layout.addWidget(self.combo_box)
+        layout.addWidget(input_button)
+        layout.addWidget(output_button)
+
+        self.setLayout(layout)
+
+    def create_input(self, label_text):
+        label = QLabel(label_text)
+        input_field = QLineEdit()
+        input_field.setStyleSheet("font-size: 18px")
+        label.setStyleSheet("font-size: 18px; font-weight: bold")
+        return label, input_field
     
+    def get_file_path(self):
+        file_dialog = QFileDialog()
+        file_dialog.setNameFilter("Text Files (*.txt)")
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
 
-if __name__ == ('__main__'):
+        if file_dialog.exec() == QFileDialog.DialogCode.Accepted:
+            return file_dialog.selectedFiles()[0]
+        return ""
+    
+    def decode_des(self):
+        key = self.key_input.text()
+        select_item = self.combo_box.currentText()
+        iv = 'тестив01'
 
-    test = 'Шлепа, скажи кар!!! Kar. Че за nax?'
-    # test = '@Шлепа'
-    # Ключ и начальный вектор должны быть равны 8 байт
-    key = 'ключ64б!'
-    iv = 'тестив01'
+        if len(key) != 8:
+            QMessageBox.warning(self, "Ошибка", "Ключ должен быть длинной из 8 символов")
+            return
 
-    # Режим ECB
-    des = DES(key, ECB)
-    shifr = des.crypt(test, ENCRYPT)
-    deshifr = des.crypt(shifr, DECRYPT)
+        file_path = self.get_file_path()
 
-    # Режим CBC
-    # des = DES(key, CBC, iv)
-    # shifr = des.crypt(test, ENCRYPT)
-    # deshifr = des.crypt(shifr, DECRYPT)
+        with open(file_path, 'r', encoding='utf-8') as f:
+            text = f.read()
 
-    # Режим CFB_WIKI
-    # des = DES(key, CFB_WIKI, iv)
-    # shifr = des.crypt(test, ENCRYPT)
-    # deshifr = des.crypt(shifr, DECRYPT)
+        if select_item == 'ECB':
+            des = DES(key, ECB)
+        elif select_item == 'CBC':
+            des = DES(key, CBC, iv)
+        elif select_item == 'CFB_WIKI':
+            des = DES(key, CFB_WIKI, iv)
+        elif select_item == 'OFB_WIKI':
+            des = DES(key, OFB_WIKI, iv)
+        elif select_item == 'CFB':
+            des = DES(key, CFB, iv)
+        elif select_item == 'OFB':
+            des = DES(key, OFB, iv)
 
-    # Режим OFB_WIKI
-    # des = DES(key, OFB_WIKI, iv)
-    # shifr = des.crypt(test, ENCRYPT)
-    # deshifr = des.crypt(shifr, DECRYPT)
+        result = des.crypt(text, DECRYPT)
 
-    # Режим CFB, где k = 8 bit
-    # des = DES(key, CFB, iv)
-    # shifr = des.crypt(test, ENCRYPT)
-    # deshifr = des.crypt(shifr, DECRYPT)
+        write_to_file("decode_text.txt", result)
 
-    # Режим OFB, где k = 8 bit
-    # des = DES(key, OFB, iv)
-    # shifr = des.crypt(test, ENCRYPT)
-    # deshifr = des.crypt(shifr, DECRYPT)
+    def encode_des(self):
+        key = self.key_input.text()
+        select_item = self.combo_box.currentText()
+        iv = 'тестив01'
 
-    print(f'Начальный текст: {test}')
-    print(f'Зашифрованый текст: {shifr}')
-    print(f'Расшифрованый текст: {deshifr}')
+        if len(key) != 8:
+            QMessageBox.warning(self, "Ошибка", "Ключ должен быть длинной из 8 символов")
+            return
+
+        file_path = self.get_file_path()
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            text = f.read()
+
+        if select_item == 'ECB':
+            des = DES(key, ECB)
+        elif select_item == 'CBC':
+            des = DES(key, CBC, iv)
+        elif select_item == 'CFB_WIKI':
+            des = DES(key, CFB_WIKI, iv)
+        elif select_item == 'OFB_WIKI':
+            des = DES(key, OFB_WIKI, iv)
+        elif select_item == 'CFB':
+            des = DES(key, CFB, iv)
+        elif select_item == 'OFB':
+            des = DES(key, OFB, iv)
+
+        result = des.crypt(text, ENCRYPT)
+
+        write_to_file("encrypt_text.txt", result)
+
+        freq_dict = Counter(result)
+
+        info_measure = entropy_txt(text)
+        info_measure_shifr = entropy_txt(result)
+
+        freq_dict_text = Counter(text)
+
+        fig1, (ax, ax1) = plt.subplots(2, 1, figsize=(16, 6))
+
+        ax.bar([i for i in cp866_chars[:128]], [freq_dict_text.get(i, 0) for i in cp866_chars[:128]])
+        ax.set_title(f'Гистограмма начального текста. Энтропия текста: {info_measure:.2f}')
+        ax.set_xlabel('Символы')
+        ax.set_ylabel('Частота')
+
+        ax1.bar([i for i in cp866_chars[128:]], [freq_dict_text.get(i, 0) for i in cp866_chars[128:]])
+        ax1.set_xlabel('Символы')
+        ax1.set_ylabel('Частота')
+
+        fig2, (ax2, ax3) = plt.subplots(2, 1, figsize=(16, 6))
+
+        ax2.bar([i for i in cp866_chars[:128]], [freq_dict.get(i, 0) for i in cp866_chars[:128]])
+        ax2.set_title(f'Гистограмма зашифрованного текста используя режим {select_item}. Энтропия текста: {info_measure_shifr:.2f}')
+        ax2.set_xlabel('Символы')
+        ax2.set_ylabel('Частота')
+
+        ax3.bar([i for i in cp866_chars[128:]], [freq_dict.get(i, 0) for i in cp866_chars[128:]])
+        ax3.set_xlabel('Символы')
+        ax3.set_ylabel('Частота')
+
+        plt.show()
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MyWindow("Лаба №4", 400, 200)
+    window.show()
+    sys.exit(app.exec())

@@ -84,22 +84,22 @@ def decode(text, key):
         blocks = defshifr
 
         # График раунда
-        freq_dict = Counter(''.join(defshifr))
+        # freq_dict = Counter(''.join(defshifr))
 
-        fig1, (ax, ax1) = plt.subplots(2, 1, figsize=(16, 6))
+        # fig1, (ax, ax1) = plt.subplots(2, 1, figsize=(16, 6))
 
-        ax.bar([i for i in cp866_chars[:128]], \
-               [freq_dict.get(i, 0) for i in cp866_chars[:128]])
-        ax.set_title(f'Гистограмма дешифрования текста. Раунд {i+1}')
-        ax.set_xlabel('Символы')
-        ax.set_ylabel('Частота')
+        # ax.bar([i for i in cp866_chars[:128]], \
+        #        [freq_dict.get(i, 0) for i in cp866_chars[:128]])
+        # ax.set_title(f'Гистограмма дешифрования текста. Раунд {i+1}')
+        # ax.set_xlabel('Символы')
+        # ax.set_ylabel('Частота')
 
-        ax1.bar([i for i in cp866_chars[128:]], \
-                [freq_dict.get(i, 0) for i in cp866_chars[128:]])
-        ax1.set_xlabel('Символы')
-        ax1.set_ylabel('Частота')
+        # ax1.bar([i for i in cp866_chars[128:]], \
+        #         [freq_dict.get(i, 0) for i in cp866_chars[128:]])
+        # ax1.set_xlabel('Символы')
+        # ax1.set_ylabel('Частота')
 
-        plt.show()
+        # plt.show()
 
     return ''.join(defshifr)
 
