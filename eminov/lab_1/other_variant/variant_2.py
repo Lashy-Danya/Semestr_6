@@ -25,6 +25,6 @@ for item in range(len(size_list)):
     # нахождение оценки дисперсии
     g = (np.power(new_num_np, 2).sum() / (size_list[item] - 1)) - (size_list[item] / (size_list[item] - 1)) * m**2
 
-    table.add_row([size_list[item], Mx, m, abs(Mx - m), Dx, g, abs(Dx - g)])
+    table.add_row([size_list[item], round(Mx, 8), round(m, 8), round(abs(Mx - m), 8), round(Dx, 8), round(g, 8), round(abs(Dx - g), 8)])
 
 print(table)
